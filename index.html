@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Foodie Registration</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #fdfbfb, #ebedee);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #333;
+    }
+    .card {
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 14px;
+      padding: 25px 30px;
+      width: 360px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 18px;
+      font-size: 22px;
+      color: #ff7b00;
+    }
+    label {
+      font-weight: bold;
+      font-size: 12px;
+      display: block;
+      margin: 8px 0 3px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin-bottom: 5px;
+      outline: none;
+      background: #fff;
+      color: #333;
+    }
+    input::placeholder {
+      color: #999;
+    }
+    select {
+      background: #fff;
+      color: #333;
+    }
+    .error {
+      font-size: 11px;
+      color: #d9534f;
+      min-height: 14px;
+      margin-bottom: 6px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #ff7b00;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #e56b00;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>🍴 Foodie Registration</h2>
+    <form id="regForm">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Enter username">
+      <div class="error" id="userErr"></div>
+
+      <label>Email</label>
+      <input type="text" id="email" placeholder="Enter email">
+      <div class="error" id="emailErr"></div>
+
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter password">
+      <div class="error" id="passErr"></div>
+
+      <label>Confirm Password</label>
+      <input type="password" id="confirm" placeholder="Re-enter password">
+      <div class="error" id="confirmErr"></div>
+
+      <label>Age</label>
+      <input type="number" id="age" placeholder="Enter age">
+      <div class="error" id="ageErr"></div>
+
+      <label>Date of Birth</label>
+      <input type="date" id="dob">
+      <div class="error" id="dobErr"></div>
+
+      <label>Gender</label>
+      <select id="gender">
+        <option value="">Select Gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select>
+      <div class="error" id="genderErr"></div>
+
+      <label>Location (Tamil Nadu)</label>
+      <select id="location">
+        <option value="">Select District</option>
+        <option>Chennai</option>
+        <option>Coimbatore</option>
+        <option>Madurai</option>
+        <option>Salem</option>
+        <option>Tirunelveli</option>
+        <option>Tiruppur</option>
+        <option>Erode</option>
+        <option>Vellore</option>
+        <!-- add more if needed -->
+      </select>
+      <div class="error" id="locErr"></div>
+
+      <button type="submit">Register</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("regForm");
+
+    const showError = (id, msg) => {
+      document.getElementById(id).textContent = msg;
+    };
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      let errors = [];
+
+      // get values
+      let username = document.getElementById("username").value.trim();
+      let email = document.getElementById("email").value.trim();
+      let pass = document.getElementById("password").value;
+      let confirm = document.getElementById("confirm").value;
+      let age = parseInt(document.getElementById("age").value.trim());
+      let dob = document.getElementById("dob").value;
+      let gender = document.getElementById("gender").value;
+      let location = document.getElementById("location").value;
+
+      // clear errors
+      document.querySelectorAll(".error").forEach(e => e.textContent = "");
+
+      // Username validation
+      if (!username) { showError("userErr","Username required"); errors.push("Username"); }
+
+      // Email validation
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError("emailErr","Invalid email");
+        errors.push("Email");
+      }
+
+      // Password validation (at least 8 chars, 1 uppercase, 1 number, optional special char)
+      if (!/^(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9@#$%^&+=!]{8,}$/.test(pass)) {
+        showError("passErr","Password must be 8+ chars, 1 uppercase, 1 number");
+        errors.push("Password");
+      }
+
+      // Confirm password
+      if (pass !== confirm) { showError("confirmErr","Passwords don’t match"); errors.push("Confirm"); }
+
+      // Age validation
+      if (!age || age < 18) { showError("ageErr","Age must be 18+"); errors.push("Age"); }
+
+      // DOB validation
+      if (!dob) { showError("dobErr","Select DOB"); errors.push("DOB"); }
+
+      // Gender validation
+      if (!gender) { showError("genderErr","Select gender"); errors.push("Gender"); }
+
+      // Location validation
+      if (!location) { showError("locErr","Select district"); errors.push("Location"); }
+
+      // Cross-check Age vs DOB
+      if (dob) {
+        let birth = new Date(dob);
+        let today = new Date();
+        let calcAge = today.getFullYear() - birth.getFullYear();
+        let m = today.getMonth() - birth.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) calcAge--;
+        if (calcAge !== age) {
+          showError("dobErr","DOB does not match Age");
+          errors.push("DOB-Age");
+        }
+      }
+
+      if (errors.length > 0) {
+        alert("⚠ Please fix: " + errors.join(", "));
+        return;
+      }
+
+      alert("🎉 Registration Successful! Welcome to Foodie App");
+    });
+  </script>
+</body>
+</html>
